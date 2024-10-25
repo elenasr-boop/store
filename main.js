@@ -12,15 +12,23 @@ items.forEach((item) => {
 
     item.addEventListener("dragstart", (event) => {
         event.dataTransfer.setData("text/plain", event.target.id);
-        console.log(event.target.id, typeof event.target.id);
         event.dataTransfer.effectAllowed = "move";
     });
+
+    item.addEventListener("touchstart", (event) => {
+        const touch = event.touches[0];
+        event.dataTransfer.setData("text/plain", event.target.id);
+    })
 });
 
 basket.addEventListener("dragover", (event) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
 });
+
+basket.addEventListener("touchmove", (event) => {
+    event.preventDefault();
+})
 
 basket.addEventListener("drop", (event) => {
     event.preventDefault(); 
@@ -38,3 +46,17 @@ basket.addEventListener("drop", (event) => {
     }
 });
 
+basket.addEventListener("touchend", (event) => {
+    const id = event.dataTransfer.getData("text/plain");
+    const draggedItem = document.getElementById(id);
+
+    if (draggedItem) {
+        basket.appendChild(draggedItem);
+        countOfItemsInBasket++;
+        if (countOfItemsInBasket > 2) {
+            main.appendChild(button);
+        }
+    } else {
+        console.error("No element found");
+    }
+})

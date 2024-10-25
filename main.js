@@ -6,6 +6,7 @@ button.textContent = "Оплатить корзину";
 button.className = "button";
 button.href = "https://lavka.yandex.ru/";
 let countOfItemsInBasket = 0;
+let draggedItemId = null;
 
 items.forEach((item) => {
     item.setAttribute('draggable', true);
@@ -17,18 +18,15 @@ items.forEach((item) => {
 
     item.addEventListener("touchstart", (event) => {
         const touch = event.touches[0];
-        event.dataTransfer.setData("text/plain", event.target.id);
-    })
+        draggedItemId = event.target.id; 
+        event.preventDefault();
+    });
 });
 
 basket.addEventListener("dragover", (event) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
 });
-
-basket.addEventListener("touchmove", (event) => {
-    event.preventDefault();
-})
 
 basket.addEventListener("drop", (event) => {
     event.preventDefault(); 
@@ -47,16 +45,17 @@ basket.addEventListener("drop", (event) => {
 });
 
 basket.addEventListener("touchend", (event) => {
-    const id = event.dataTransfer.getData("text/plain");
-    const draggedItem = document.getElementById(id);
-
-    if (draggedItem) {
-        basket.appendChild(draggedItem);
-        countOfItemsInBasket++;
-        if (countOfItemsInBasket > 2) {
-            main.appendChild(button);
+    if (draggedItemId) {
+        const draggedItem = document.getElementById(draggedItemId);
+        if (draggedItem) {
+            basket.appendChild(draggedItem);
+            countOfItemsInBasket++;
+            if (countOfItemsInBasket > 2) {
+                main.appendChild(button);
+            }
+        } else {
+            console.error("No element found");
         }
-    } else {
-        console.error("No element found");
+        draggedItemId = null;
     }
-})
+});
